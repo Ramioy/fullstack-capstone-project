@@ -35,14 +35,12 @@ function SearchPage() {
 
     const handleSearch = async () => {
         // Construct the search URL based on user input
-        const category = document.getElementById('categorySelect').value || '';
-        const condition = document.getElementById('conditionSelect').value || '';
         const baseUrl = `${urlConfig.backendUrl}/api/search?`;
         const queryParams = new URLSearchParams({
             name: searchQuery,
             age_years: ageRange,
-            category,
-            condition
+            category: document.getElementById('categorySelect').value,
+            condition: document.getElementById('conditionSelect').value
         }).toString();
 
         try {
