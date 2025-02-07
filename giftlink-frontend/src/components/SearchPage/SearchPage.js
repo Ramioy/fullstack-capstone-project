@@ -22,6 +22,7 @@ function SearchPage() {
                     throw new Error(`HTTP error; ${response.status}`)
                 }
                 const data = await response.json();
+                console.log("Initial fetch:", data)
                 setSearchResults(data);
             } catch (error) {
                 console.log('Fetch error: ' + error.message);
@@ -34,12 +35,14 @@ function SearchPage() {
 
     const handleSearch = async () => {
         // Construct the search URL based on user input
+        const category = document.getElementById('categorySelect').value || '';
+        const condition = document.getElementById('conditionSelect').value || '';
         const baseUrl = `${urlConfig.backendUrl}/api/search?`;
         const queryParams = new URLSearchParams({
             name: searchQuery,
             age_years: ageRange,
-            category: document.getElementById('categorySelect').value,
-            condition: document.getElementById('conditionSelect').value,
+            category,
+            condition
         }).toString();
 
         try {
@@ -48,6 +51,7 @@ function SearchPage() {
                 throw new Error('Search failed');
             }
             const data = await response.json();
+            console.log("With filter:", data);
             setSearchResults(data);
         } catch (error) {
             console.error('Failed to fetch search results:', error);
