@@ -4,20 +4,19 @@ const jwt = require('jsonwebtoken');
 const connectToDatabase = require('../models/db');
 const router = express.Router();
 const dotenv = require('dotenv');
-const pino = require('pino');  // Import Pino logger
+const pino = require('pino');
 
-//Task 1: Use the `body`,`validationResult` from `express-validator` for input validation
 const { body, validationResult } = require('express-validator');
 
 
-const logger = pino();  // Create a Pino logger instance
+const logger = pino();
 
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post('/register', async (req, res) => {
     try {
-      //Connect to `giftsdb` in MongoDB through `connectToDatabase` in `db.js`.
+      
       const db = await connectToDatabase();
       const collection = db.collection("users");
       const existingEmail = await collection.findOne({ email: req.body.email });
@@ -58,7 +57,7 @@ router.post('/login', async (req, res) => {
     console.log("\n\n Inside login")
 
     try {
-        // const collection = await connectToDatabase();
+        
         const db = await connectToDatabase();
         const collection = db.collection("users");
         const theUser = await collection.findOne({ email: req.body.email });
@@ -91,13 +90,11 @@ router.post('/login', async (req, res) => {
       }
 });
 
-// update API
-router.put('/update', async (req, res) => {
-    // Task 2: Validate the input using `validationResult` and return approiate message if there is an error.
 
+router.put('/update', async (req, res) => {
+   
     const errors = validationResult(req);
 
-    // Task 3: Check if `email` is present in the header and throw an appropriate error message if not present.
     if (!errors.isEmpty()) {
         logger.error('Validation errors in update request', errors.array());
         return res.status(400).json({ errors: errors.array() });
@@ -111,11 +108,9 @@ router.put('/update', async (req, res) => {
             return res.status(400).json({ error: "Email not found in the request headers" });
         }
 
-        //Task 4: Connect to MongoDB
         const db = await connectToDatabase();
         const collection = db.collection("users");
 
-        //Task 5: Find user credentials
         const existingUser = await collection.findOne({ email });
 
         if (!existingUser) {
@@ -126,14 +121,12 @@ router.put('/update', async (req, res) => {
         existingUser.firstName = req.body.name;
         existingUser.updatedAt = new Date();
 
-        //Task 6: Update user credentials in DB
         const updatedUser = await collection.findOneAndUpdate(
             { email },
             { $set: existingUser },
             { returnDocument: 'after' }
         );
 
-        //Task 7: Create JWT authentication with user._id as payload using secret key from .env file
         const payload = {
             user: {
                 id: updatedUser._id.toString(),
